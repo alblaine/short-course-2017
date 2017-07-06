@@ -2,9 +2,9 @@
 #install.packages("gutenbergr")
 #install.packages("NLP")
 #install.packages("tm")
-install.packages("scales")
-install.packages("stringr")
-install.packages("tidytext")
+#install.packages("scales")
+#install.packages("stringr")
+#install.packages("tidytext")
 
 library(tidyverse)
 library(gutenbergr)
@@ -69,9 +69,11 @@ poe_bigrams <- works %>%
 poe_bigrams %>%
   count(bigram, sort = TRUE)
 
-# filters out stop words and recounts bigrams
+# filters out stop words, strips odd characters around words, and recounts bigrams
 bigrams_separated <- poe_bigrams %>%
-  separate(bigram, c("word1", "word2"), sep = " ")
+  separate(bigram, c("word1", "word2"), sep = " ") %>%
+  mutate(word1 = str_extract(word1, "[a-z']+")) %>%
+  mutate(word2 = str_extract(word2, "[a-z']+"))
 
 bigrams_filtered <- bigrams_separated %>%
   filter(!word1 %in% stop_words$word) %>%
@@ -80,9 +82,13 @@ bigrams_filtered <- bigrams_separated %>%
 bigram_counts <- bigrams_filtered %>% 
   count(word1, word2, sort = TRUE)
 
-# searches for top bigrams based on input for word2
+# searches for top bigrams based on input for word2, sorted by title
 bigram_search <- bigrams_filtered %>%
-  filter(word2 == "time") %>%
+  filter(word2 == "heart") %>%
   count(word1, title, sort = TRUE)
 
-bigram_search
+# makes a word cloud of the top bigrams overall based on word1 ("heart")
+bigram_no_titles <- bigrams_filtered %>%
+  filter(word2 == "heart") %>%
+  count(word1, sort = TRUE)
+
