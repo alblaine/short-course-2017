@@ -1,0 +1,3 @@
+"0","exclude <- names(sample_df) %in% c(""color"", ""director_name"", ""director_facebook_likes"", ""actor_3_name"", ""actor_3_facebook_likes"", ""actor_2_facebook_likes"", ""actor_2_name"", ""actor_1_facebook_likes"", ""actor_1_name"", ""movie_facebook_likes"", ""cast_total_facebook_likes"", ""plot_keywords"", ""facenumber_in_poster"", ""language"", ""aspect_ratio"", ""genres"")"
+"0","mydata <-  sample_df[!exclude]"
+"0","mydata"

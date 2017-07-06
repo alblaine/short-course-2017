@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(htmltab)\n\n###########\n#unused code, but can't get rid of it yet:\n#library(WikipediR)\n#Retrieve the categories for the Marvel Cinemeatic Universe\" article on en.wiki\n#cats <- categories_in_page(\"en\", \"wikipedia\", pages = \"Marvel_Cinematic_Universe\")\n#links <- page_links(\"en\",\"wikipedia\", page = \"Marvel_Cinematic_Universe\")\n##########\n\n# Read in table that has feature films from the Marvel Cinematic Universe wikipedia page\ndoc <- htmltab(\"https://en.wikipedia.org/wiki/Marvel_Cinematic_Universe\", 2)\n\n# built a url query to get data from film pages\nfilms <- doc[[1]]\n\n# generate a list of links from the first column (problem is some of these won't be to the films, but rather, the main characters)\n\nwiki <- \"https://en.wikipedia.org/wiki/\"\n\n#test the first to see if it works\nnew_link <- paste(wiki, films[[1]], sep=\"\")\nnew_link",
+    "created" : 1498568013162.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "665591264",
+    "id" : "D04B3DEA",
+    "lastKnownWriteTime" : 1498660998,
+    "last_content_update" : 1498660998035,
+    "path" : "~/text-analysis-with-R/marvel_film_link_harvester.R",
+    "project_path" : "marvel_film_link_harvester.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

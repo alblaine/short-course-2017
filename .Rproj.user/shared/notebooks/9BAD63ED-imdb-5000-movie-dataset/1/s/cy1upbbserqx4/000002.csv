@@ -1,0 +1,9 @@
+"0","if (length(tables_df$tableName) > 0) {"
+"0","  sample_qry <- data.world::qry_sql(sprintf(""SELECT * FROM `%s`"", tables_df$tableName[[1]]))"
+"0","  sample_df <- data.world::query(sample_qry, dataset = dataset_key)"
+"0","  sample_df"
+"0","}"
+"2","number of columns of result is not a multiple of vector length (arg 1)"
+"2","4 parsing failures.
+row # A tibble: 4 x 5 col     row    col   expected      actual         file expected   <int>  <chr>      <chr>       <chr>        <chr> actual 1  1474 budget an integer  2400000000 literal data file 2  2211 budget an integer 12215500000 literal data row 3  2232 budget an integer  2500000000 literal data col 4  3179 budget an integer  4200000000 literal data
+"

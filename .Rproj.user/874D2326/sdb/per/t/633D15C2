@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(\"rvest\")\nr_viz <- read_html(\"http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html\")\nr_images <- vector()\nimage_links <- vector()\n\n# harvest image links \nr_images <- r_viz %>%\n  html_nodes(\"img\") %>%\n  html_attr(\"src\")\n\n# prepend rest of URL to image name\nfor(i in seq_along(r_images)){\n  image_links <- paste('http://r-statistics.co/', r_images, sep=\"\")\n}\n\n# save image files to charts folder in working directory\nfor (i in seq_along(image_links)) {\n  filename <- paste(i, 'png', sep=\".\")\n  download.file(image_links[i], charts/filename, mode = 'wb')\n  }\n\n",
+    "created" : 1498682367382.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3507979332",
+    "id" : "633D15C2",
+    "lastKnownWriteTime" : 1498158111,
+    "last_content_update" : 1498158111,
+    "path" : "~/Data Viz with R/gather.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
