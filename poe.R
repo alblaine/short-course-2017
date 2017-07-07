@@ -61,7 +61,8 @@ total_words <- doc_words %>%
 # creates a joined table listing word frequencies and document word counts
 poe_words <- left_join(doc_words, total_words)
 
-# creates a td_idf ratio for each word to find important terms by document
+# creates a td-idf ratio for each word to find important terms by document
+# td-idf helps find a document's distinguishing words (from other docs in the collection)
 poe_words <- poe_words %>%
   bind_tf_idf(word, title, n)
 
@@ -69,6 +70,29 @@ poe_words <- poe_words %>%
 poe_words %>%
   select(-total) %>%
   arrange(desc(tf_idf))
+
+# plots top 20 unique tf-idf terms on a chart 
+
+plot_poe <- poe_words %>%
+  arrange(desc(tf_idf)) %>%
+  mutate(word = factor(word, levels = rev(unique(word))))
+
+plot_poe %>% 
+  top_n(20) %>%
+  ggplot(aes(word, tf_idf, fill = title)) +
+  geom_col() +
+  labs(x = NULL, y = "tf-idf") +
+  coord_flip()
+
+# graphs highest tf-idf by title 
+plot_poe %>% 
+  top_n(15) %>% 
+  ungroup %>%
+  ggplot(aes(word, tf_idf, fill = title)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~title, ncol = 2, scales = "free") +
+  coord_flip()
 
 # creates bigrams (word pair associations)
 poe_bigrams <- works %>%
@@ -101,4 +125,10 @@ bigram_no_titles <- bigrams_filtered %>%
   filter(word2 == "heart") %>%
   count(word1, sort = TRUE)
 
+# searches for a particular string in originally downloaded text (stored in 'works')
+# extracts those strings and writes them to a .CSV file
+works %>% 
+  filter(str_detect(text, "heart")) %>% 
+  select(text, title) %>%
+  write.csv(.,file = "~/Desktop/poe.csv")
 
