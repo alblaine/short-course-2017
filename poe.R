@@ -45,23 +45,29 @@ tidy_poe %>%
   xlab(NULL) +
   coord_flip()
 
-# creates a frequency table for each word in texts with a proportion variable
+# counts frequency of words per document
+doc_words <- tidy_poe %>%
+  count(title, word, sort = TRUE) %>%
+  ungroup()
 
-ungroup(tidy_poe)
+# lists total number of words (n) by title
+total_words <- doc_words %>% 
+  group_by(title) %>% 
+  summarize(total = sum(n))
 
-frequency <-
-  mutate(tidy_poe, author = "Edgar Allan Poe") %>% 
-  mutate(word = str_extract(word, "[a-z']+")) %>%
-  count(author, word) %>%
-  mutate(proportion = n / sum(n)) %>% 
-  select(-n) %>% 
-  spread(author, proportion) %>% 
-  gather(author, proportion, `Edgar Allan Poe`)
+# creates a joined table listing word frequencies and document word counts
+poe_words <- left_join(doc_words, total_words)
 
-head(frequency, 30)
+# creates a td_idf ratio for each word to find important terms by document
+poe_words <- poe_words %>%
+  bind_tf_idf(word, title, n)
 
-# creates bigrams
+# sorts so that high-ranking tdf-idf terms show up first
+poe_words %>%
+  select(-total) %>%
+  arrange(desc(tf_idf))
 
+# creates bigrams (word pair associations)
 poe_bigrams <- works %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
@@ -87,8 +93,9 @@ bigram_search <- bigrams_filtered %>%
   filter(word2 == "heart") %>%
   count(word1, title, sort = TRUE)
 
-# makes a word cloud of the top bigrams overall based on word1 ("heart")
+# searches for top bigrams overall based on word1 ("heart")
 bigram_no_titles <- bigrams_filtered %>%
   filter(word2 == "heart") %>%
   count(word1, sort = TRUE)
+
 
