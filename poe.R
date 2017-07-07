@@ -20,8 +20,11 @@ poe <- gutenberg_works(author == "Poe, Edgar Allan")
 # stores all ids of works
 work_ids <- poe[1]
 
+# removes the non-literary work with id 25525 (The Raven Edition: Table of Contents and Index)
+ids <- subset(work_ids, work_ids$gutenberg_id != 25525)
+
 # downloads full texts of each work
-works <- gutenberg_download(work_ids, meta_fields = "title", strip=TRUE)
+works <- gutenberg_download(ids, meta_fields = "title", strip=TRUE)
 
 # tokenizes the texts, groups them by title, and takes out stop words
 tidy_poe <- works %>%
