@@ -14,8 +14,13 @@ library(scales)
 library(stringr)
 library(tidytext)
 
-# gets information about all poe works, filtering duplicates
+# Run this code to get information about all poe works, filtering duplicates
 poe <- gutenberg_works(author == "Poe, Edgar Allan")
+
+
+# Print the information so you can see it
+poe 
+
 
 # stores all ids of works
 work_ids <- poe[1]
@@ -126,7 +131,7 @@ bigram_no_titles <- bigrams_filtered %>%
   count(word1, sort = TRUE)
 
 # searches for a particular string in originally downloaded text (stored in 'works')
-# extracts those strings and writes them to a .CSV file
+# extracts those strings and writes them to a .CSV file on your desktop
 works %>% 
   filter(str_detect(text, "heart")) %>% 
   select(text, title) %>%
