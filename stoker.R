@@ -294,24 +294,42 @@ top_terms %>%
 # Part-of-speech tagging can help us remove all non-nouns.
 
 
-##### Part of Speech Tagging - Do not run this code in workshop ########### 
-annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
-                   word_token = Maxent_Word_Token_Annotator(),
-                   pos_tag    = Maxent_POS_Tag_Annotator())
+#### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #41 ######
+#annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
+#                   word_token = Maxent_Word_Token_Annotator(),
+#                   pos_tag    = Maxent_POS_Tag_Annotator())
 
-tagPOS <- function(x, ann = annotators) {
-  s <- as.String(x)
-  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
-  a3 <- annotate(s, ann$pos_tag, a2)
-  a3w <- subset(a3, type == "word")
-  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
-  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
-  list(POStagged = POStagged, POStags = POStags)
-}
+#tagPOS <- function(x, ann = annotators) {
+#  s <- as.String(x)
+#  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
+#  a3 <- annotate(s, ann$pos_tag, a2)
+#  a3w <- subset(a3, type == "word")
+#  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
+#  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
+#  list(POStagged = POStagged, POStags = POStags)}
 
-
-draculaTag <- tagPOS(dracula$text) # NOTE: tags each word with a part of speech label. Takes about 10-15 minutes to complete
+#draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words
 
 #write tagged text to a file
+#fileConn <- file("~/text-analysis-with-R/tagged.txt")
+#writeLines(draculaTag$POStagged, fileConn)
+#close(fileConn)
 
-###
+######
+
+# 41. Read in file with all Dracula words tagged with POS
+tagged <- readLines("~/text-analysis-with-R/tagged.txt")
+
+# 42. Delete words that aren't nouns
+nouns <- sapply(strsplit(tagged,"[[:punct:]]*/NN.?"),function(x) {res = sub("(^.*\\s)(\\w+$)", "\\2", x); res[!grepl("\\s",res)]} )
+
+# 43. Make all words lower case and turn the list into a string of words.
+nouns <- tolower(nouns) 
+
+# 44. Make a list of names and common words to take out of the "nouns" 
+
+stop_words <- c("mina", "chapter", "count", "dracula", "van", "helsing", "lucy", "harker", "seward", "time", "day", "night", "hand")
+
+nouns <- nouns[!nouns %in% stop_words]
+
+
