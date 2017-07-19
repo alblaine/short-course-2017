@@ -308,7 +308,7 @@ top_terms %>%
 #  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
 #  list(POStagged = POStagged, POStags = POStags)}
 
-#draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words
+#draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
 #write tagged text to a file
 #fileConn <- file("~/text-analysis-with-R/tagged.txt")
@@ -331,5 +331,12 @@ nouns <- tolower(nouns)
 stop_words <- c("mina", "chapter", "count", "dracula", "van", "helsing", "lucy", "harker", "seward", "time", "day", "night", "hand")
 
 nouns <- nouns[!nouns %in% stop_words]
+
+
+# 45. Turn the list of nouns into a data frame and count the freqency of each noun
+nouns <- data.frame(table(unlist(nouns)))
+
+
+
 
 
