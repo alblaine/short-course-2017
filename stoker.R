@@ -48,18 +48,16 @@ works <- gutenberg_download(work_ids, meta_fields = "title", strip=TRUE)
 grouped_works <- works %>%
   group_by(title) 
   
-
 #8. Tokenize the text of each of the works 
 
 words <- grouped_works %>%
-  unnest_tokens(word,text)
-
+  unnest_tokens(word,text) 
 
 #9. Type 'words' in the console and hit enter to see the output of what you just did
 
 
 #10. Remove common stop words (a, an, the, but, or etc). 
-
+data("stop_words")
 words <- words %>%
   anti_join(stop_words)
 
@@ -295,30 +293,30 @@ top_terms %>%
 
 
 #### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #41 ######
-#annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
-#                   word_token = Maxent_Word_Token_Annotator(),
-#                   pos_tag    = Maxent_POS_Tag_Annotator())
+annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
+                   word_token = Maxent_Word_Token_Annotator(),
+                   pos_tag    = Maxent_POS_Tag_Annotator())
 
-#tagPOS <- function(x, ann = annotators) {
-#  s <- as.String(x)
-#  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
-#  a3 <- annotate(s, ann$pos_tag, a2)
-#  a3w <- subset(a3, type == "word")
-#  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
-#  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
-#  list(POStagged = POStagged, POStags = POStags)}
+tagPOS <- function(x, ann = annotators) {
+  s <- as.String(x)
+  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
+  a3 <- annotate(s, ann$pos_tag, a2)
+  a3w <- subset(a3, type == "word")
+  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
+  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
+  list(POStagged = POStagged, POStags = POStags)}
 
-#draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
+draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
 #write tagged text to a file
-#fileConn <- file("~/text-analysis-with-R/tagged.txt")
-#writeLines(draculaTag$POStagged, fileConn)
-#close(fileConn)
+fileConn <- file("~/text-analysis-with-R/tagged2.txt")
+writeLines(draculaTag$POStagged, fileConn)
+close(fileConn)
 
 ######
 
 # 41. Read in file with all Dracula words tagged with POS
-tagged <- readLines("~/text-analysis-with-R/tagged.txt")
+tagged <- readLines("~/text-analysis-with-R/tagged2.txt")
 
 # 42. Delete words that aren't nouns
 nouns <- sapply(strsplit(tagged,"[[:punct:]]*/NN.?"),function(x) {res = sub("(^.*\\s)(\\w+$)", "\\2", x); res[!grepl("\\s",res)]} )
@@ -328,15 +326,48 @@ nouns <- tolower(nouns)
 
 # 44. Make a list of names and common words to take out of the "nouns" 
 
-stop_words <- c("mina", "chapter", "count", "dracula", "van", "helsing", "lucy", "harker", "seward", "time", "day", "night", "hand")
+stop_words <- c("mina", "count", "dracula", "van", "helsing", "lucy", "harker", "jonathan", "professor", "arthur", "dr", "time", "eyes", "hand")
 
 nouns <- nouns[!nouns %in% stop_words]
 
+nouns <-nouns[!nouns %in% stopwords()]
 
-# 45. Turn the list of nouns into a data frame and count the freqency of each noun
-nouns <- data.frame(table(unlist(nouns)))
+nouns
+
+# 45. Turn the list of nouns into a data frame. Add a column for chapters
+
+nouns_df <- data.frame(text=nouns, stringsAsFactors = F) %>%
+  mutate(chapter = cumsum(str_detect(text, regex("^chapter", 
+                                                    ignore_case = TRUE)))) %>%
+# count the number of times a word appears by chapter
+  count(chapter, text, sort=TRUE) %>% 
+  ungroup() %>%
+# replace the word chapter with 'document'
+  unite(document, chapter)
+
+# create a document term matrix from the nouns data frame
+
+nouns_dtm <- nouns_df %>% cast_dtm(document, text, n)       
 
 
+# run LDA algorithm on the dtm
 
+nouns_lda <- LDA(nouns_dtm, k = 20, control = list(seed = 1234))
 
+nouns_topics <- tidy(nouns_lda, matrix = "beta")
+
+top_nouns <- nouns_topics %>%
+  group_by(topic) %>%
+  top_n(5, beta) %>%  
+  ungroup() %>%
+  arrange(topic, -beta)  # arranges topics in descending order of highest-lowest beta
+
+top_nouns
+
+top_nouns %>%
+  mutate(term = reorder(term, beta)) %>%
+  ggplot(aes(term, beta, fill = factor(topic))) +  # draws a bar chart
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +  # breaks chart into subplots, each with their own scales
+  coord_flip()
 
