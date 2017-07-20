@@ -74,7 +74,11 @@ count <- words %>%
 count %>%
   filter(n > 500) %>%  # applies a filter to the count
   mutate(word = reorder(word, n)) %>%   # reorders words based on the count #, greatest to least
-  ggplot(aes(word, n)) + geom_col() + xlab(NULL) + coord_flip()  # uses ggplot library to create a column chart
+  ggplot(aes(word, n)) + # plots the words and their counts in a column chart
+  geom_col() + 
+  xlab(NULL) + # sets x-axis label to blank
+  coord_flip()  #flip coordinates so that the bars are horizontal rather than vertical
+
 
 # 12. Change 500 in (n > 500) to a new number and see what happens to the graph. Re-run the code for #11
 
@@ -111,14 +115,13 @@ distinct_words <- tf_idf_table %>%
 
 plot_distinct <- distinct_words %>%
   mutate(word = factor(word, levels = rev(unique(word)))) %>%  
-  top_n(5) %>%  # selects top 5 entries in each title
+  top_n(5) %>%  # selects top 3 entries in each group, in this case, by title
   ggplot(aes(word, tf_idf, fill = title)) +  #draws plot
   geom_col() +
   labs(x = NULL, y = "tf-idf") + 
   coord_flip() +
   facet_wrap(~title, nrow=5, scales="free")  # creates subplots based on title
 
-plot_distinct # plots the graph
 
 # 19. Plot the top 15 unique terms for Dracula 
 
@@ -142,7 +145,7 @@ plot_dracula
 bigrams <- works %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
-head(bigrams, 40)
+
 # 22. Type 'bigrams' into console and hit Enter to see output
 
 
@@ -253,7 +256,7 @@ chapters_dtm <- word_counts %>%
 
 # 36. Run the Latent Dirichlet Allocation model on the document matrix.
 
-chapters_lda <- LDA(chapters_dtm, k = 12, control = list(seed = 1234))
+chapters_lda <- LDA(chapters_dtm, k = 4, control = list(seed = 1234))
 
 
 chapters_lda
