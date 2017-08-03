@@ -52,15 +52,15 @@ works <- gutenberg_download(work_ids, meta_fields = "title", strip=TRUE)
 grouped_works <- works %>%
   group_by(title) 
 
-#8. Tokenize the text of each of the works 
+# 8. Tokenize the text of each of the works 
 
 words <- grouped_works %>%
   unnest_tokens(word,text) 
 
-#9. Type 'words' in the console and hit enter to see the output of what you just did
+# 9. Type 'words' in the console and hit enter to see the output of what you just did
 
 
-#10. Remove common stop words (a, an, the, but, or etc). 
+# 10. Remove common stop words (a, an, the, but, or etc). 
 data("stop_words")
 words <- words %>%
   anti_join(stop_words)
@@ -75,7 +75,7 @@ count <- words %>%
   count(word, sort = TRUE)
 
 count
-# 11. Create a column chart of most frequent words across all texts where frequency (n) > 500
+# Create a column chart of most frequent words across all texts where frequency (n) > 500
 
 count %>%
   filter(n > 500) %>%  # applies a filter to the count
@@ -194,7 +194,7 @@ bigram_counts <- bigrams_filtered %>%
 
 bigram_counts
 
-#27. Make a network graph of the top bigrams
+# 27. Make a network graph of the top bigrams
 
 bigram_graph <- bigram_counts %>%
   filter(n > 20) %>%
@@ -210,22 +210,19 @@ ggraph(bigram_graph, layout = "fr") +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 
 
-# 27. Search for top bigrams based on input for word2, sorted by title
+# 28. Search for top bigrams based on input for word2, sorted by title
 bigram_search <- bigrams_filtered %>%
   filter(word2 == "lucy") %>%
   count(word1, title, sort = TRUE)
 
 bigram_search
 
-# 28. Search for top bigrams overall based on word2 ("love")
+# 29. Search for top bigrams overall based on word2 ("love")
 bigram_no_titles <- bigrams_filtered %>%
   filter(word2 == "love") %>%
   count(word1, sort = TRUE)
 
 bigram_no_titles
-
-# 29. Now search for another word in the texts by changing the word in line 175 from "love" to
-# something else. Run the code to see what happens.
 
 
 # 30. Search for a particular string ("death") in Dracula,
@@ -283,13 +280,13 @@ chapters_dtm <- word_counts %>%
 
 chapters_dtm
 
-# 36. Run the Latent Dirichlet Allocation model on the document matrix.
+# 37. Run the Latent Dirichlet Allocation model on the document matrix.
 
 chapters_lda <- LDA(chapters_dtm, k = 12, control = list(seed = 1234))
 
 chapters_lda
 
-# 37. Create a table where each word is listed with a probability of a term being generated from the topic 
+# 38. Create a table where each word is listed with a probability of a term being generated from the topic 
 # In this case, the probability that you'll find the term in a given chapter.
 # beta = the probability of a term generated from a topic according to the multinomial model
 
@@ -298,7 +295,7 @@ chapter_topics <- tidy(chapters_lda, matrix = "beta")
 chapter_topics
 
 
-# 38. Counts the top 5 terms with the highest probabilities by chapter.
+# 39. Counts the top 5 terms with the highest probabilities by chapter.
 top_terms <- chapter_topics %>%
   group_by(topic) %>%
   top_n(5, beta) %>%  
@@ -307,7 +304,7 @@ top_terms <- chapter_topics %>%
 
 top_terms
 
-# 39. Creates plots of topics
+# 40. Creates plots of topics
 
 top_terms %>%
   mutate(term = reorder(term, beta)) %>%
@@ -316,44 +313,47 @@ top_terms %>%
   facet_wrap(~ topic, scales = "free") +  # breaks chart into subplots, each with their own scales
   coord_flip()
 
-# 40. The problem with the steps we just did is that the topics generated aren't useful. 
+# 41. The problem with the steps we just did is that the topics generated aren't useful. 
 # They're heavily weighted toward character names and include lots of common terms (time, hand)
 # Part-of-speech tagging can help us remove all non-nouns.
 
 
-#### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #41 ######
-annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
-                   word_token = Maxent_Word_Token_Annotator(),
-                   pos_tag    = Maxent_POS_Tag_Annotator())
+#### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #42 ######
+#annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
+#                   word_token = Maxent_Word_Token_Annotator(),
+#                   pos_tag    = Maxent_POS_Tag_Annotator())
 
-tagPOS <- function(x, ann = annotators) {
-  s <- as.String(x)
-  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
-  a3 <- annotate(s, ann$pos_tag, a2)
-  a3w <- subset(a3, type == "word")
-  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
-  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
-  list(POStagged = POStagged, POStags = POStags)}
+#tagPOS <- function(x, ann = annotators) {
+#  s <- as.String(x)
+#  a2 <- annotate(s, list(ann$sent_token, ann$word_token))
+#  a3 <- annotate(s, ann$pos_tag, a2)
+#  a3w <- subset(a3, type == "word")
+#  POStags <- unlist(lapply(a3w$features, `[[`, "POS"))
+#  POStagged <- paste(sprintf("%s/%s", s[a3w], POStags), collapse = " ")
+#  list(POStagged = POStagged, POStags = POStags)}
 
-draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
+# draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
-#write tagged text to a file
-fileConn <- file("~/text-analysis-with-R/tagged.txt")
-writeLines(draculaTag$POStagged, fileConn)
-close(fileConn)
+# write tagged text to a file
+#fileConn <- file("~/text-analysis-with-R/tagged.txt")
+#writeLines(draculaTag$POStagged, fileConn)
+#close(fileConn)
 
 ###### END
 
-# 41. Read in file with all Dracula words tagged with POS
+# 42. Read in file with all Dracula words tagged with POS
+
 tagged <- readLines("~/text-analysis-with-R/tagged.txt")
 
-# 42. Delete words that aren't nouns
+# 43. Delete words that aren't nouns
+
 nouns <- sapply(strsplit(tagged,"[[:punct:]]*/NN.?"),function(x) {res = sub("(^.*\\s)(\\w+$)", "\\2", x); res[!grepl("\\s",res)]} )
 
-# 43. Make all words lower case and turn the list into a string of words.
+# 44. Make all words lower case and turn the list into a string of words.
+
 nouns <- tolower(nouns) 
 
-# 44. Make a list of names and common words to take out of the "nouns" 
+# 45. Make a list of names and common words to take out of the "nouns" 
 
 stop_words <- c("mina", "count", "dracula", "van", "helsing", "lucy", "harker", "jonathan", "professor", "arthur", "dr", "time", "eyes", "hand")
 
@@ -363,26 +363,23 @@ nouns <-nouns[!nouns %in% stopwords()] #remove common stop words
 
 nouns
 
-# 45. Turn the list of nouns into a data frame. Add a column for chapters
+# 46. Turn the list of nouns into a data frame. Add a column for chapters
 
 nouns_df <- data.frame(text=nouns, stringsAsFactors = F) %>%
   mutate(chapter = cumsum(str_detect(text, regex("^chapter", 
                                                  ignore_case = TRUE)))) %>%
-# count the number of times a word appears by chapter
-  count(chapter, text, sort=TRUE) %>% 
-  ungroup() %>%
-
-# replace the word chapter with 'document'
-  unite(document, chapter)
+  count(chapter, text, sort=TRUE) %>% # count the number of times a word appears by chapter
+  ungroup() %>%  
+  unite(document, chapter) # replace the word chapter with 'document'
 
 nouns_df
 
-# create a document term matrix from the nouns data frame
+# 47. Create a document term matrix from the nouns data frame
 
 nouns_dtm <- nouns_df %>% cast_dtm(document, text, n)       
 
 
-# run LDA algorithm on the dtm
+# 48. Run LDA algorithm on the dtm
 
 nouns_lda <- LDA(nouns_dtm, k = 20, control = list(seed = 1234))
 
@@ -395,6 +392,8 @@ top_nouns <- nouns_topics %>%
   arrange(topic, -beta)  # arranges topics in descending order of highest-lowest beta
 
 top_nouns
+
+# 49. Make a graph showing the topic models
 
 top_nouns %>%
   mutate(term = reorder(term, beta)) %>%
