@@ -1,15 +1,19 @@
-#install.packages("tidyverse")
-#install.packages("gutenbergr")
-#install.packages("tm")
-#install.packages("scales")
-#install.packages("stringr")
-#install.packages("tidytext")
-#install.packages("igraph")
-#install.packages("ggraph")
-#install.packages("topicmodels")
-#install.packages("NLP")
-#install.packages("openNLP")
 
+# Install these packages first by highlighting lines 4-14 and pressing the 'Run' button
+
+install.packages("tidyverse")
+install.packages("gutenbergr")
+install.packages("tm")
+install.packages("scales")
+install.packages("stringr")
+install.packages("tidytext")
+install.packages("igraph")
+install.packages("ggraph")
+install.packages("topicmodels")
+install.packages("NLP")
+install.packages("openNLP")
+
+# Now load the packages. Highlight lines 17-27 and click Run
 library(tidyverse)
 library(gutenbergr)
 library(tm)
@@ -61,6 +65,7 @@ data("stop_words")
 words <- words %>%
   anti_join(stop_words)
 
+words
 
 # 11. Ungroup words by title and count most frequent words across all texts. 
 # The ungroup() function removes connection to a particular book title.
@@ -69,6 +74,7 @@ count <- words %>%
   ungroup() %>%
   count(word, sort = TRUE)
 
+count
 # 11. Create a column chart of most frequent words across all texts where frequency (n) > 500
 
 count %>%
@@ -84,15 +90,21 @@ count %>%
 freq_words <- words %>%
   count(title, word, sort = TRUE) 
 
+freq_words
+
 # 14. List total word counts (n) by title
 
 total_words <- freq_words %>% 
   group_by(title) %>% 
   summarize(total = sum(n))
 
+total_words
+
 # 15. Create a joined table listing word frequencies and document word counts
 
 words_table <- left_join(freq_words, total_words)
+
+words_table
 
 # 16. Calculate a tf-idf ratio for each word to find important terms by document
 # Note: tf-idf helps find a document's distinguishing words (from other docs in the collection)
@@ -100,12 +112,16 @@ words_table <- left_join(freq_words, total_words)
 tf_idf_table <- words_table %>%
   bind_tf_idf(word, title, n)   # bind_tf_idf is a function from the tidytext package
 
+tf_idf_table
+
 # 17. Sort words so that highest-ranking tdf-idf terms show up first. 
 # These are likely to be distinguishing terms, such as character names
 
 distinct_words <- tf_idf_table %>%
   select(-total) %>%
   arrange(desc(tf_idf))
+
+distinct_words
 
 # 18. Plot top 5 unique tf-idf terms per work. This uses dplyr and ggplot2 packages
 
@@ -143,6 +159,7 @@ bigrams <- works %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
 head(bigrams, 40)
+
 # 22. Type 'bigrams' into console and hit Enter to see output
 
 
@@ -151,6 +168,8 @@ head(bigrams, 40)
 bigrams %>%
   count(bigram, sort = TRUE) # counts bigram pairs and sorts them by title 
 
+bigrams
+
 # 24. Strip non-alpha characters (punctuation and dashes) from words
 
 bigrams_separated <- bigrams %>%
@@ -158,17 +177,22 @@ bigrams_separated <- bigrams %>%
   mutate(word1 = str_extract(word1, "[a-z']+")) %>% 
   mutate(word2 = str_extract(word2, "[a-z']+"))
 
+bigrams_separated
+
 # 25. Filter out stop words from bigrams 
 
 bigrams_filtered <- bigrams_separated %>%
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word)
 
+bigrams_filtered
+
 # 26. Recount the bigrams
 
 bigram_counts <- bigrams_filtered %>% 
   count(word1, word2, sort = TRUE)
 
+bigram_counts
 
 #27. Make a network graph of the top bigrams
 
@@ -191,10 +215,14 @@ bigram_search <- bigrams_filtered %>%
   filter(word2 == "lucy") %>%
   count(word1, title, sort = TRUE)
 
+bigram_search
+
 # 28. Search for top bigrams overall based on word2 ("love")
 bigram_no_titles <- bigrams_filtered %>%
   filter(word2 == "love") %>%
   count(word1, sort = TRUE)
+
+bigram_no_titles
 
 # 29. Now search for another word in the texts by changing the word in line 175 from "love" to
 # something else. Run the code to see what happens.
@@ -202,6 +230,7 @@ bigram_no_titles <- bigrams_filtered %>%
 
 # 30. Search for a particular string ("death") in Dracula,
 # extract those strings and write them to a .CSV file on your desktop
+
 works %>% 
   filter(title=="Dracula", str_detect(text, "death")) %>% 
   select(text, title) %>%
@@ -231,12 +260,12 @@ dracula <- dracula %>%
   mutate(chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]", 
                                                  ignore_case = TRUE))))
 
-
-# 34. Tokenize text
+# 34. Tokenize text (each word gets it own row in a table)
 
 chapter_words <- dracula %>%
   unnest_tokens(word, text)
 
+chapter_words 
 
 # 35. Find word counts
 
@@ -246,15 +275,17 @@ word_counts <- chapter_words %>%
   ungroup() %>%
   unite(document, chapter)
 
+word_counts
+
 # 36. Create a document term matrix on word counts using tidytext function 'cast_dtm()
 chapters_dtm <- word_counts %>%
   cast_dtm(document, word, n)                                
 
+chapters_dtm
 
 # 36. Run the Latent Dirichlet Allocation model on the document matrix.
 
 chapters_lda <- LDA(chapters_dtm, k = 12, control = list(seed = 1234))
-
 
 chapters_lda
 
@@ -263,6 +294,7 @@ chapters_lda
 # beta = the probability of a term generated from a topic according to the multinomial model
 
 chapter_topics <- tidy(chapters_lda, matrix = "beta")  
+
 chapter_topics
 
 
@@ -306,14 +338,14 @@ tagPOS <- function(x, ann = annotators) {
 draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
 #write tagged text to a file
-fileConn <- file("~/text-analysis-with-R/tagged2.txt")
+fileConn <- file("~/text-analysis-with-R/tagged.txt")
 writeLines(draculaTag$POStagged, fileConn)
 close(fileConn)
 
-######
+###### END
 
 # 41. Read in file with all Dracula words tagged with POS
-tagged <- readLines("~/text-analysis-with-R/tagged2.txt")
+tagged <- readLines("~/text-analysis-with-R/tagged.txt")
 
 # 42. Delete words that aren't nouns
 nouns <- sapply(strsplit(tagged,"[[:punct:]]*/NN.?"),function(x) {res = sub("(^.*\\s)(\\w+$)", "\\2", x); res[!grepl("\\s",res)]} )
@@ -327,7 +359,7 @@ stop_words <- c("mina", "count", "dracula", "van", "helsing", "lucy", "harker", 
 
 nouns <- nouns[!nouns %in% stop_words]
 
-nouns <-nouns[!nouns %in% stopwords()]
+nouns <-nouns[!nouns %in% stopwords()] #remove common stop words
 
 nouns
 
@@ -336,11 +368,14 @@ nouns
 nouns_df <- data.frame(text=nouns, stringsAsFactors = F) %>%
   mutate(chapter = cumsum(str_detect(text, regex("^chapter", 
                                                  ignore_case = TRUE)))) %>%
-  # count the number of times a word appears by chapter
+# count the number of times a word appears by chapter
   count(chapter, text, sort=TRUE) %>% 
   ungroup() %>%
-  # replace the word chapter with 'document'
+
+# replace the word chapter with 'document'
   unite(document, chapter)
+
+nouns_df
 
 # create a document term matrix from the nouns data frame
 
