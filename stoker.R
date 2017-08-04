@@ -335,7 +335,7 @@ top_terms %>%
 # draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
 # write tagged text to a file
-#fileConn <- file("~/text-analysis-with-R/tagged.txt")
+#fileConn <- file("~/short-course-2017/tagged.txt")
 #writeLines(draculaTag$POStagged, fileConn)
 #close(fileConn)
 
