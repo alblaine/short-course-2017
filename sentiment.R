@@ -2,23 +2,26 @@
 # It classifies sentences into 6 categories: Positive, Negative, Very Positive, Very Negative, Sarcasm, and Neutral
 
 # 1. Install each package if you don't already have it installed. Run each line of code.
+
 install.packages("tidytext")
 install.packages("tidyverse")
 install.packages("RSentiment")
 
-# 2. Now run each line of code to load the packages into your current R session
+# 2. Now run each line of code to load the packages into your current R session. You have to do this every time.
+
 library(tidytext)
 library(tidyverse)
 library(RSentiment)
 
 # 3. Read in Twitter data from a CSV file. The data is a list of tweets.
+
 tweets_file <- read_csv("weather-tweets.csv")
 
 # 4. Get the tweet text only from the data you loaded in. 
 
 tweets <- tweets_file$text  # tweets_file$text means the "text" variable of the tweets_file dataset
 
-# 5. Run some functions to clean the data
+# 5. Run some functions to clean the data.
 
 tweets <- iconv(tweets, to="ASCII", sub="") # uses iconv function (base package) to strip non-ASCII characters from tweets.
 
@@ -40,15 +43,15 @@ tweet_sents <- data.frame(sentiments) # makes a data frame from the tweets and s
 
 tweet_sents 
 
-# 8. Write the tweet_sents data frame to a new CSV file using write.csv() function from base R package
+# 8. Write the tweet_sents data frame to a new CSV file using write.csv() function from base R package.
 
 write.csv(tweet_sents, file = "tweet-sentiments.csv")
 
-# 9. Sum sentiments by category
+# 9. Sum sentiments by category.
 
 calculate_total_presence_sentiment(tweets)
 
-# 10. Make a histogram of the sentiment ratings. x equals the counts of the sentiment variables
+# 10. Make a histogram of the sentiment ratings. x equals the counts of the sentiment variables.
 
 ggplot(tweet_sents) + geom_histogram(aes(tweet_sents$sentiment), stat="count")
 
@@ -57,7 +60,7 @@ ggplot(tweet_sents) + geom_histogram(aes(tweet_sents$sentiment), stat="count")
 
 x_labels <- factor(tweet_sents$sentiment, levels=c("Sarcasm", "Very Negative", "Negative", "Neutral", "Positive", "Very Positive"))
 
-# 12. Re-make the plot with ordered categories 
+# 12. Re-make the plot with ordered categories. 
 
 ggplot(tweet_sents) + geom_histogram(aes(x_labels), stat="count")
 
