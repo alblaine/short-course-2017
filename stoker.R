@@ -292,14 +292,15 @@ chapters_lda
 
 # 38. Create a table where each word is listed with a probability of a term being generated from the topic 
 # In this case, the probability that you'll find the term in a given chapter.
-# beta = the probability of a term generated from a topic according to the multinomial model
 
 chapter_topics <- tidy(chapters_lda, matrix = "beta")  
+# If matrix == "beta" (default), returns a table with one row per topic and term, with columns
+# reference: https://www.rdocumentation.org/packages/tidytext/versions/0.1.3/topics/lda_tidiers
 
 chapter_topics
 
 
-# 39. Counts the top 5 terms with the highest probabilities by chapter.
+# 39. Counts the top 5 terms by topic.
 top_terms <- chapter_topics %>%
   group_by(topic) %>%
   top_n(5, beta) %>%  
