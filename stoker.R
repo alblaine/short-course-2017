@@ -12,6 +12,7 @@ install.packages("ggraph")
 install.packages("topicmodels")
 install.packages("NLP")
 install.packages("openNLP")
+install.packages("SnowballC")
 
 # Now load the packages. Highlight lines 17-27 and click Run
 library(tidyverse)
@@ -25,6 +26,7 @@ library(ggraph)
 library(topicmodels)
 library(NLP)
 library(openNLP)
+library(SnowballC)
 
 # 1. Run this code to get information about all poe works, filtering duplicates
 stoker <- gutenberg_works(author == "Stoker, Bram")
@@ -67,6 +69,10 @@ words <- words %>%
 
 words
 
+words <- words %>%
+  #ungroup() %>%
+  mutate(stem = wordStem(word, language="english")) # creates a new column of word stems
+
 # 11. Ungroup words by title and count most frequent words across all texts. 
 # The ungroup() function removes connection to a particular book title.
 
@@ -77,10 +83,12 @@ count <- words %>%
 count
 # Create a column chart of most frequent words across all texts where frequency (n) > 500
 
-count %>%
+graph_count <-count %>%
   filter(n > 500) %>%  # applies a filter to the count
-  mutate(word = reorder(word, n)) %>%   # reorders words based on the count #, greatest to least
+  mutate(word = reorder(word, n)) %>%   # reorders word categories for axis labels based on the count #, greatest to least
   ggplot(aes(word, n)) + geom_col() + xlab(NULL) + coord_flip()  # uses ggplot library to create a column chart
+
+graph_count #prints out the graph
 
 # 12. Change 500 in (n > 500) to a new number and see what happens to the graph. Re-run the code for #11
 
@@ -96,7 +104,7 @@ freq_words
 
 total_words <- freq_words %>% 
   group_by(title) %>% 
-  summarize(total = sum(n))
+  summarize(total = sum(n))  # summarize reduces multiple values down to a single summary, in this case, total number of words in a text
 
 total_words
 
@@ -118,16 +126,16 @@ tf_idf_table
 # These are likely to be distinguishing terms, such as character names
 
 distinct_words <- tf_idf_table %>%
-  select(-total) %>%
-  arrange(desc(tf_idf))
+  select(-total) %>%  # select(-) means to remove it from the table
+  arrange(desc(tf_idf)) # this arranges the tf_idf column in descending order
 
 distinct_words
 
 # 18. Plot top 5 unique tf-idf terms per work. This uses dplyr and ggplot2 packages
 
 plot_distinct <- distinct_words %>%
-  mutate(word = factor(word, levels = rev(unique(word)))) %>%  
   top_n(5) %>%  # selects top 5 entries in each title
+  mutate(word = reorder(word, tf_idf)) %>% # orders the words by tf_idf score
   ggplot(aes(word, tf_idf, fill = title)) +  #draws plot
   geom_col() +
   labs(x = NULL, y = "tf-idf") + 
@@ -138,10 +146,11 @@ plot_distinct # plots the graph
 
 # 19. Plot the top 15 unique terms for Dracula 
 
+  
 plot_dracula <- distinct_words %>%  # creates a variable where the plot will be stored
   filter(title =="Dracula") %>%
-  mutate(word = factor(word, levels = rev(unique(word)))) %>%  # sorts tf-idf from greatest to least
-  top_n(15) %>%
+  top_n(10) %>%
+  mutate(word = reorder(word, tf_idf)) %>%  # sorts tf-idf from greatest to least
   ggplot(aes(word, tf_idf, fill = title)) +
   geom_col() +
   labs(x = NULL, y = "tf-idf") +
