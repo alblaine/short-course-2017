@@ -61,17 +61,12 @@ words <- grouped_works %>%
 
 # 9. Type 'words' in the console and hit enter to see the output of what you just did
 
-
 # 10. Remove common stop words (a, an, the, but, or etc). 
 data("stop_words")
 words <- words %>%
   anti_join(stop_words)
 
 words
-
-words <- words %>%
-  #ungroup() %>%
-  mutate(stem = wordStem(word, language="english")) # creates a new column of word stems
 
 # 11. Ungroup words by title and count most frequent words across all texts. 
 # The ungroup() function removes connection to a particular book title.
@@ -160,7 +155,7 @@ plot_dracula <- distinct_words %>%  # creates a variable where the plot will be 
 
 plot_dracula
 
-### Topic 2: N-grams / word pairs ### 
+### Topic 2: N-grams / word pairs ########################################
 
 # 21. Create bigrams (word pairs) for all texts
 
@@ -243,7 +238,7 @@ works %>%
   write.csv(.,file = "~/text-analysis-with-R/strings.csv")
 
 
-### Topic 3: Topic Modeling Dracula ### 
+### Topic 3: Topic Modeling Dracula ########################################
 ## In this exercise, we are going to do some topic modeling on the chapters of Bram Stoker's Dracula
 
 # 31. Filter 'works' to just include Dracula. 
@@ -269,7 +264,7 @@ dracula <- dracula %>%
 # 34. Tokenize text (each word gets it own row in a table)
 
 chapter_words <- dracula %>%
-  unnest_tokens(word, text)
+  unnest_tokens(word, text) 
 
 chapter_words 
 
@@ -327,7 +322,7 @@ top_terms %>%
 # Part-of-speech tagging can help us remove all non-nouns.
 
 
-#### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #42 ######
+#### Part of Speech Tagging - DO NOT RUN this code in workshop. Skip to #42 #########################
 #annotators <- list(sent_token = Maxent_Sent_Token_Annotator(),
 #                   word_token = Maxent_Word_Token_Annotator(),
 #                   pos_tag    = Maxent_POS_Tag_Annotator())
@@ -387,12 +382,13 @@ nouns_df
 
 nouns_dtm <- nouns_df %>% cast_dtm(document, text, n)       
 
-
 # 48. Run LDA algorithm on the dtm
 
 nouns_lda <- LDA(nouns_dtm, k = 20, control = list(seed = 1234))
 
-nouns_topics <- tidy(nouns_lda, matrix = "beta")
+nouns_topics <- tidy(nouns_lda, matrix = "beta") # turn it into a tidy data frame from tidytext package
+# If matrix == "beta" (default), returns a table with one row per topic and term, with columns
+# reference: https://www.rdocumentation.org/packages/tidytext/versions/0.1.3/topics/lda_tidiers
 
 top_nouns <- nouns_topics %>%
   group_by(topic) %>%
