@@ -28,9 +28,9 @@ This repository contains materials for the course, covering such topics as:
 [sentiment analysis](sentiment.R)  
 [twitter data file](weather-tweets.csv)  
 
-[sentiment analysis practice](practice1.R)  
-[sentiment analysis practice twitter data](school.csv)  
+[sentiment analysis practice R script](practice1.R)  
+[practice twitter data](school.csv)  
 
-[literary analysis](stoker.R)
-[literary analysis practice](practice2.R)
+[literary analysis](stoker.R)  
+[literary analysis practice R script](practice2.R)
 
