@@ -28,7 +28,7 @@ library(NLP)
 library(openNLP)
 library(SnowballC)
 
-# 1. Run this code to get information about all poe works, filtering duplicates
+# 1. Run this code to get information about all of the author's works, filtering duplicates
 stoker <- gutenberg_works(author == "Stoker, Bram")
 
 
@@ -76,7 +76,8 @@ count <- words %>%
   count(word, sort = TRUE)
 
 count
-# Create a column chart of most frequent words across all texts where frequency (n) > 500
+
+# 11 B. Create a column chart of most frequent words across all texts where frequency (n) > 500
 
 graph_count <-count %>%
   filter(n > 500) %>%  # applies a filter to the count
