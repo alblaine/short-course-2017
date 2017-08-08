@@ -21,18 +21,21 @@ This repository contains materials for the course, covering such topics as:
 
 [slides](slides.pdf)  
 
-[web scraping activity](web_scraping.R)    
+[web scraping activity in-class](web_scraping.R)  
+[web scraping practice](web_scraping_exercise.R)  
+[web scraping practice DIY guide](Webscraping-Do-It-Yourself.pdf)   
+
 [API activity](json_api.R)  
 
 
 **Day 2 files: Text Analysis**  
 
-[sentiment analysis](sentiment.R)  
+[sentiment analysis R script](sentiment.R)  
 [twitter data file](weather-tweets.csv)  
 
 [sentiment analysis practice R script](practice1.R)  
 [practice twitter data](school.csv)  
 
-[literary analysis](stoker.R)  
+[literary analysis R script](stoker.R)  
 [literary analysis practice R script](practice2.R)
 
