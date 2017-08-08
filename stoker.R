@@ -77,14 +77,32 @@ count <- words %>%
 
 count
 
+# let's write this out the long way:
+
+count <- words %>% ungroup()
+
+count <- count %>% count(word, sort=TRUE)
+
+count
+
 # 11 B. Create a column chart of most frequent words across all texts where frequency (n) > 500
 
-graph_count <-count %>%
+graph_count <- count %>%
   filter(n > 500) %>%  # applies a filter to the count
   mutate(word = reorder(word, n)) %>%   # reorders word categories for axis labels based on the count #, greatest to least
   ggplot(aes(word, n)) + geom_col() + xlab(NULL) + coord_flip()  # uses ggplot library to create a column chart
 
 graph_count #prints out the graph
+
+# Let's write this the long way:
+
+graph_count <- count %>% filter(n>500) # filters out words with  counts less than 500
+
+graph_count <- graph_count %>% mutate(word=reorder(word, n)) # changes word column to a factor ordered by n
+
+graph_count <- graph_count %>% ggplot(aes(word, n)) + geom_col() + xlab(NULL) + coord_flip() # creates the graph
+
+graph_count 
 
 # 12. Change 500 in (n > 500) to a new number and see what happens to the graph. Re-run the code for #11
 
@@ -103,6 +121,9 @@ total_words <- freq_words %>%
   summarize(total = sum(n))  # summarize reduces multiple values down to a single summary, in this case, total number of words in a text
 
 total_words
+
+# How would you write #14 out the long way? 
+
 
 # 15. Create a joined table listing word frequencies and document word counts
 
@@ -140,9 +161,20 @@ plot_distinct <- distinct_words %>%
 
 plot_distinct # plots the graph
 
+# Let's write this out the long way:
+
+plot_distinct <- distinct_words %>% top_n(5)
+
+plot_distinct <- plot_distinct %>% mutate(word = reorder(word, tf_idf))
+
+plot_distinct <- plot_distinct %>% ggplot(aes(word, tf_idf, fill=title)) + geom_col() + 
+  labs(x=NULL, y = "tf-idf") + coord_flip() + facet_wrap(~title, nrow=5, scales="free")
+
+plot_distinct 
+
+
 # 19. Plot the top 15 unique terms for Dracula 
 
-  
 plot_dracula <- distinct_words %>%  # creates a variable where the plot will be stored
   filter(title =="Dracula") %>%
   top_n(10) %>%
