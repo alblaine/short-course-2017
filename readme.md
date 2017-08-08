@@ -19,6 +19,8 @@ This repository contains materials for the course, covering such topics as:
 
 **Day 1 files: Web Scraping and API Harvesting**  
 
+[slides](slides.pdf)  
+
 [web scraping activity](web_scraping.R)    
 [API activity](json_api.R)  
 
