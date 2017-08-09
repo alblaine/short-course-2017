@@ -22,10 +22,12 @@ This repository contains materials for the course, covering such topics as:
 [slides](slides.pdf)  
 
 [web scraping activity in-class](web_scraping.R)  
-[web scraping practice](web_scraping_exercise.R)  
-[web scraping practice DIY guide](Webscraping-Do-It-Yourself.pdf)   
+[web scraping practice exercise](web_scraping_exercise.R)  
+[web scraping practice instructions](Webscraping-Do-It-Yourself.pdf)     
 
 [API activity](json_api.R)  
+[API practice exercise](json_api_exercise.R)  
+[API practice instructions](JSON-API-Do-It-Yourself.pdf)  
 
 
 **Day 2 files: Text Analysis**  
