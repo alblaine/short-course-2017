@@ -268,7 +268,7 @@ bigram_no_titles
 works %>% 
   filter(title=="Dracula", str_detect(text, "death")) %>% 
   select(text, title) %>%
-  write.csv(.,file = "~/text-analysis-with-R/strings.csv")
+  write.csv(.,file = "strings.csv")
 
 
 ### Topic 3: Topic Modeling Dracula ########################################
@@ -373,7 +373,7 @@ top_terms %>%
 # draculaTag <- tagPOS(dracula$text) # NOTE: tags dracula words with parts of speech tags
 
 # write tagged text to a file
-#fileConn <- file("~/short-course-2017/tagged.txt")
+#fileConn <- file("tagged.txt")
 #writeLines(draculaTag$POStagged, fileConn)
 #close(fileConn)
 
@@ -381,7 +381,7 @@ top_terms %>%
 
 # 42. Read in file with all Dracula words tagged with POS
 
-tagged <- readLines("~/text-analysis-with-R/tagged.txt")
+tagged <- readLines("tagged.txt")
 
 # 43. Delete words that aren't nouns
 
